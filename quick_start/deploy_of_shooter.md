@@ -76,14 +76,3 @@ qd_10、qd_15、qd_20
 *mon launch rm_shooter_controllers load_controllers.launch*
 4.运行rqt，在rqt中调整mode以及hz进行调试
 *rqt*
-
-
-
-
-
-
-
-
-
-
-
