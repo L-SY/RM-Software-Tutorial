@@ -65,6 +65,9 @@ push_per_rotation:拨弹轮每旋转一圈发射的子弹数
 block_effort:判断拨弹轮阻塞的力矩
 扳机的实时力矩受到电机和其传动比控制，根据block_effort=电机堵转扭矩*传动比可以进行初步估算
 
+qd_10、qd_15、qd_20
+不同子弹速度下的摩擦轮的角速度，qd后面的是对应的子弹速度
+
 ## 实车调试
 1.usb2can连接或远程连接nuc
 2.运行rm_hw中的launch
