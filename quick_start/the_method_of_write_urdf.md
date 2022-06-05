@@ -1,5 +1,6 @@
 # urdf编写流程
 在编写urdf前，需要对实车的结构有一定了解，没有实车时可通过图纸或者向设计者了解
+
 在出urdf时，必须要和机械组的组员面对面出，将每一个link载入，在rviz中观察偏移量以及朝向位置有没有出现错误，最后再在gazebo中检查惯量，确保一个link的stl以及参数都没有问题再出下一个link，直到全部正确为止
 
 ## urdf规范
@@ -29,13 +30,15 @@ inertial标签中需要填入机械组给出的所属link部分的质量、质�
 </inertial>
 ```
 #### collision
-在collision标签中载入机械组给出的stl模型，保证碰撞箱完全覆盖visual中载入的stl模型
+在collision标签中使用box来覆盖link模型，对于不规则的几何体，将其拆解为多个box进行组合
+
+box的长宽高属性以及相对于link原点的偏移量需要向机械组索要
 示例:
 ```xacro
 <collision>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
-        <mesh filename="package://rm_description/meshes/sentry/catapult.stl" scale="0.001 0.001 0.001"/>
+        <box size="0.15 0.25 0.32/>
     </geometry>
 </collision>
 ```
@@ -44,16 +47,13 @@ inertial标签中需要填入机械组给出的所属link部分的质量、质�
 urdf中每两个link需要一个joint进行连接，joint要有子link以及父link
 #### joint类型
 joint常用的类型有平动以及转动，清楚joint的运动情况，选择正确的关节类型
-转动关节:
-continous 没有限位的转动关节，可以绕单轴无限旋转
-revolute  有限位的转动关节，有一定的旋转角度限制
-平动关节:
-prismatic 沿某一轴滑动的关节
-固定关节:
-fixed     不允许运动的关节
 示例:
 ```xacro
-<joint name="drive_wheel_joint" type="revolute">
+<joint name="xxx_joint" type="revolute/continuous/prismatic/fixed">
+<!-- revolute: 有限位的转动关节，有一定的旋转角度限制 
+     continuous: 没有限位的旋转关节，可以绕单轴无限旋转
+     prismatic: 沿着某一轴承滑动的关节
+     fixed: 不允许运动的关节 -->
 ```
 #### axis
 设置关节围绕哪一个轴运动
@@ -74,14 +74,19 @@ joint中写入的偏移量是指子link的坐标系到父link坐标系的偏移�
 ```
 
 ## stl规范
-机械组给出的stl不能超过2M，在尽量保证美观的前提下删除不需要的部分
+机械组给出的stl不能超过2M，在尽量保证美观的前提下删除不需要的部分，需要注意的是机械组不能将joint相关的关键零件隐藏掉
+
 有电机操纵的部分（例如A）需要单独写成一个A的link，需要单独出一份A的stl（可以把电机当成joint来看）
+
 跟随A运动的部分包含控制其运动的电机归属于A的link，其余部分归属于A的父link
 
 ## 数据规范
-机械所给出的stl属于高度简化的模型，但每一个link的质量、质心以及惯性矩阵是需要未简化的
+机械所给出的stl属于高度简化的模型，但每一个link的质量、质心以及惯性矩阵这些数据是需要未隐藏的
+
 填入的所有数据都要换算成国际单位
 
 ## 坐标系规范
 base_link的坐标系出在几何中心，其他link的坐标系出在与父link连接处
+
+还要检查各个link之间是否有同心和干涉的情况
                     
